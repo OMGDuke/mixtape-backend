@@ -1,0 +1,21 @@
+{
+  "name": "mixtape-backend",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "repository": "git@github.com:OMGDuke/mixtape-backend.git",
+  "author": "OMGDuke <alex@omgduke.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "firebase": "^5.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  },
+  "scripts": {
+    "start": "node src/server",
+    "dev": "./node_modules/nodemon/bin/nodemon.js src/server"
+  }
+}
