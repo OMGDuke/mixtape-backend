@@ -116,7 +116,7 @@ app.get('/callback', function (req, res) {
         request.get(options, function (error, response, body) {
           createFirebaseToken(body.id).then(firebaseToken => {
             // we can also pass the token to the browser to make requests from there
-            res.redirect(process.env.APP_URL + '#/dashboard?' +
+            res.redirect(process.env.APP_URL + '#/login?' +
               querystring.stringify({
                 id: body.id,
                 firebaseToken,
@@ -126,7 +126,7 @@ app.get('/callback', function (req, res) {
         });
 
       } else {
-        res.redirect(process.env.APP_URL + '#/dashboard?' +
+        res.redirect(process.env.APP_URL + '#/login?' +
           querystring.stringify({
             error: 'invalid_token'
           }));
