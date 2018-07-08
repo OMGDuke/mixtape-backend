@@ -3,11 +3,19 @@ const request = require('request'); // "Request" library
 const cors = require('cors');
 const querystring = require('querystring');
 const cookieParser = require('cookie-parser');
+const admin = require("firebase-admin");
 require('dotenv').config()
 
 const PORT = 8000;
 
+var serviceAccount = require('../service-account.json');
 
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: `https://${process.env.DB_NAME}.firebaseio.com`
+});
+
+// Spotify details
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirect_uri = process.env.REDIRECT_URL;
@@ -17,7 +25,7 @@ const redirect_uri = process.env.REDIRECT_URL;
  * @param  {number} length The length of the string
  * @return {string} The generated string
  */
-const generateRandomString = function (length) {
+const generateRandomString = (length) => {
   let text = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -26,6 +34,14 @@ const generateRandomString = function (length) {
   }
   return text;
 };
+
+const createFirebaseToken = (spotifyID) => {
+  // The uid we'll assign to the user.
+  const uid = `spotify:${spotifyID}`;
+
+  // Create the custom token.
+  return admin.auth().createCustomToken(uid);
+}
 
 const stateKey = 'spotify_auth_state';
 
@@ -98,15 +114,17 @@ app.get('/callback', function (req, res) {
 
         // use the access token to access the Spotify Web API
         request.get(options, function (error, response, body) {
-          console.log(body);
+          createFirebaseToken(body.id).then(firebaseToken => {
+            // we can also pass the token to the browser to make requests from there
+            res.redirect(process.env.APP_URL + '#/dashboard?' +
+              querystring.stringify({
+                id: body.id,
+                firebaseToken,
+                refresh_token
+              }));
+          })
         });
 
-        // we can also pass the token to the browser to make requests from there
-        res.redirect(process.env.APP_URL + '#/dashboard?' +
-          querystring.stringify({
-            access_token: access_token,
-            refresh_token: refresh_token
-          }));
       } else {
         res.redirect(process.env.APP_URL + '#/dashboard?' +
           querystring.stringify({

@@ -61,3 +61,6 @@ typings/
 .next
 
 .sonarlint
+
+# firebase service account https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#createanewserviceaccount
+service-account.json
